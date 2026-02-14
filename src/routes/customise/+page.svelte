@@ -1,11 +1,24 @@
 <script lang="ts">
+  import { PUBLIC_API_URL, PUBLIC_API_KEY } from "$env/static/public";
+
   let selectedLanguage = "";
   let selectedDependency = "";
   let selectedDependencies: string[] = [];
   let customExtras = "";
   let customDependencies: string[] = [];
   let selectedDependencyDescription = "";
+  let selectedVersion = "";
   let languages = ["Python", "JavaScript", "Go"];
+  let isLoading = false;
+  let errorMessage = "";
+  let generatedDockerfile = "";
+  let copied = false;
+
+  const languageVersions: Record<string, string[]> = {
+    Python: ["3.12", "3.11", "3.10", "3.9"],
+    JavaScript: ["22", "20", "18"],
+    Go: ["1.23", "1.22", "1.21"],
+  };
 
   const dependencies = {
     Python: [
@@ -111,6 +124,61 @@
       .map((dep) => dep.trim())
       .filter((dep) => dep.length > 0);
   }
+
+  async function generateDockerfile() {
+    if (!selectedLanguage || !selectedDependency || !selectedVersion) {
+      errorMessage = "Please select a language, dependency stack, and version.";
+      return;
+    }
+
+    isLoading = true;
+    errorMessage = "";
+    generatedDockerfile = "";
+
+    try {
+      const res = await fetch(`${PUBLIC_API_URL}/generate-dockerfile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": PUBLIC_API_KEY,
+        },
+        body: JSON.stringify({
+          config: {
+            language: selectedLanguage,
+            dependency_stack: selectedDependency,
+            extra_dependencies: customDependencies,
+            language_version: selectedVersion,
+          },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        errorMessage = data.error || `Request failed with status ${res.status}`;
+        return;
+      }
+
+      generatedDockerfile = data.dockerfile;
+    } catch (e) {
+      errorMessage = e instanceof Error ? e.message : "Network error. Please try again.";
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  }
+
+  function getDockerRunCommand(): string {
+    const lang = selectedLanguage.toLowerCase();
+    const ver = selectedVersion;
+    const tag = `stackfordev-${lang}:${ver}`;
+    return `docker run --rm -it -v $(pwd):/usr/src/app ${tag} bash`;
+  }
 </script>
 
 <svelte:head>
@@ -137,6 +205,9 @@
           selectedDependencies = [];
           selectedDependencyDescription = "";
           selectedDependency = "";
+          selectedVersion = "";
+          generatedDockerfile = "";
+          errorMessage = "";
         }}
       >
         <option value="" disabled>Select a language</option>
@@ -166,6 +237,18 @@
     </div>
 
     <div class="card">
+      <h2>Select Version</h2>
+      <select bind:value={selectedVersion} disabled={!selectedLanguage}>
+        <option value="" disabled>Select a version</option>
+        {#if selectedLanguage}
+          {#each languageVersions[selectedLanguage] as version}
+            <option value={version}>{selectedLanguage} {version}</option>
+          {/each}
+        {/if}
+      </select>
+    </div>
+
+    <div class="card">
       <h2>Custom Extras</h2>
       <p class="hint">Enter additional dependencies, separated by commas</p>
       <textarea
@@ -184,7 +267,7 @@
 
     <div class="card highlight">
       <h2>Summary</h2>
-      <p><strong>Language:</strong> {selectedLanguage || "None"}</p>
+      <p><strong>Language:</strong> {selectedLanguage || "None"} {selectedVersion ? `(${selectedVersion})` : ""}</p>
       <p>
         <strong>Dependencies:</strong>
         {#if selectedDependencies.length > 0}
@@ -212,20 +295,56 @@
     </div>
 
     <div class="button-group">
-      <button class="cta-button">Generate Docker Image</button>
+      <button
+        class="cta-button"
+        on:click={generateDockerfile}
+        disabled={isLoading || !selectedLanguage || !selectedDependency || !selectedVersion}
+      >
+        {isLoading ? "Generating..." : "Generate Docker Image"}
+      </button>
       <button
         class="secondary-button"
         on:click={() => {
           selectedLanguage = "";
           selectedDependencies = [];
           customExtras = "";
+          customDependencies = [];
           selectedDependencyDescription = "";
           selectedDependency = "";
+          selectedVersion = "";
+          generatedDockerfile = "";
+          errorMessage = "";
         }}
       >
         Reset Selection
       </button>
     </div>
+
+    {#if errorMessage}
+      <div class="card error-card">
+        <p class="error-message">{errorMessage}</p>
+      </div>
+    {/if}
+
+    {#if generatedDockerfile}
+      <div class="card result-card">
+        <h2>Generated Dockerfile</h2>
+        <div class="dockerfile-container">
+          <button class="copy-button" on:click={() => copyToClipboard(generatedDockerfile)}>
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          <pre><code>{generatedDockerfile}</code></pre>
+        </div>
+
+        <h3>Run your container</h3>
+        <div class="dockerfile-container">
+          <button class="copy-button" on:click={() => copyToClipboard(getDockerRunCommand())}>
+            Copy
+          </button>
+          <pre><code>{getDockerRunCommand()}</code></pre>
+        </div>
+      </div>
+    {/if}
   </div>
 </section>
 
@@ -412,6 +531,71 @@
       rgba(255, 87, 51, 0.2) 0%,
       rgba(51, 181, 255, 0.2) 100%
     );
+  }
+
+  .error-card {
+    border: 1px solid #e53e3e;
+    background: rgba(229, 62, 62, 0.05);
+  }
+
+  .error-message {
+    color: #e53e3e;
+    font-weight: 500;
+  }
+
+  .result-card h2,
+  .result-card h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .result-card h3 {
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    color: #2c3e50;
+  }
+
+  .dockerfile-container {
+    position: relative;
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .dockerfile-container pre {
+    margin: 0;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .dockerfile-container code {
+    color: #d4d4d4;
+    font-family: "Fira Code", "Cascadia Code", monospace;
+  }
+
+  .copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+    color: #d4d4d4;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .copy-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .cta-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .highlight p {
