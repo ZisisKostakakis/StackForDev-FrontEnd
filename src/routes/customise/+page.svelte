@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { PUBLIC_API_URL, PUBLIC_API_KEY } from "$env/static/public";
+  import { enhance } from "$app/forms";
+  import type { ActionData } from "./$types";
+
+  let { form }: { form: ActionData } = $props();
 
   let selectedLanguage = "";
   let selectedDependency = "";
@@ -161,47 +164,19 @@
       .filter((dep) => dep.length > 0);
   }
 
-  async function generateDockerfile() {
+  function generateDockerfile() {
     if (!selectedLanguage || !selectedDependency || !selectedVersion) {
       errorMessage = "Please select a language, dependency stack, and version.";
       return;
     }
-
-    isLoading = true;
     errorMessage = "";
     generatedDockerfile = "";
-
-    try {
-      const res = await fetch(`${PUBLIC_API_URL}/generate-dockerfile`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": PUBLIC_API_KEY,
-        },
-        body: JSON.stringify({
-          config: {
-            language: selectedLanguage,
-            dependency_stack: selectedDependency,
-            extra_dependencies: customDependencies,
-            language_version: selectedVersion,
-          },
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        errorMessage = data.error || `Request failed with status ${res.status}`;
-        return;
-      }
-
-      generatedDockerfile = data.dockerfile;
-    } catch (e) {
-      errorMessage = e instanceof Error ? e.message : "Network error. Please try again.";
-    } finally {
-      isLoading = false;
-    }
   }
+
+  $effect(() => {
+    if (form?.dockerfile) generatedDockerfile = form.dockerfile;
+    if (form?.error) errorMessage = form.error;
+  });
 
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
@@ -330,31 +305,55 @@
       </p>
     </div>
 
-    <div class="button-group">
-      <button
-        class="cta-button"
-        on:click={generateDockerfile}
-        disabled={isLoading || !selectedLanguage || !selectedDependency || !selectedVersion}
-      >
-        {isLoading ? "Generating..." : "Generate Docker Image"}
-      </button>
-      <button
-        class="secondary-button"
-        on:click={() => {
-          selectedLanguage = "";
-          selectedDependencies = [];
-          customExtras = "";
-          customDependencies = [];
-          selectedDependencyDescription = "";
-          selectedDependency = "";
-          selectedVersion = "";
-          generatedDockerfile = "";
-          errorMessage = "";
-        }}
-      >
-        Reset Selection
-      </button>
-    </div>
+    <form
+      method="POST"
+      action="?/generate"
+      use:enhance={() => {
+        generateDockerfile();
+        isLoading = true;
+        return async ({ update }) => {
+          await update();
+          isLoading = false;
+        };
+      }}
+    >
+      <input
+        type="hidden"
+        name="config"
+        value={JSON.stringify({
+          language: selectedLanguage,
+          dependency_stack: selectedDependency,
+          extra_dependencies: customDependencies,
+          language_version: selectedVersion,
+        })}
+      />
+      <div class="button-group">
+        <button
+          type="submit"
+          class="cta-button"
+          disabled={isLoading || !selectedLanguage || !selectedDependency || !selectedVersion}
+        >
+          {isLoading ? "Generating..." : "Generate Docker Image"}
+        </button>
+        <button
+          type="button"
+          class="secondary-button"
+          on:click={() => {
+            selectedLanguage = "";
+            selectedDependencies = [];
+            customExtras = "";
+            customDependencies = [];
+            selectedDependencyDescription = "";
+            selectedDependency = "";
+            selectedVersion = "";
+            generatedDockerfile = "";
+            errorMessage = "";
+          }}
+        >
+          Reset Selection
+        </button>
+      </div>
+    </form>
 
     {#if errorMessage}
       <div class="card error-card">
