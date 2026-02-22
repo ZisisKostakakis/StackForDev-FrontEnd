@@ -1,120 +1,142 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+	import { page } from '$app/stores';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 </script>
 
 <header>
-  <nav>
-    <ul>
-      <li aria-current={$page.url.pathname === "/" ? "page" : undefined}>
-        <a href="/">Home</a>
-      </li>
-      <li aria-current={$page.url.pathname === "/about" ? "page" : undefined}>
-        <a href="/about">About</a>
-      </li>
-      <li>
-        <a href="https://github.com/ZisisKostakakis" class="github-link">Github Profile</a>
-      </li>
-    </ul>
-  </nav>
+	<nav>
+		<a href="/" class="logo">StackForDev</a>
+
+		<div class="nav-links">
+			<a href="/" aria-current={$page.url.pathname === '/' ? 'page' : undefined}>Home</a>
+			<a href="/about" aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>About</a>
+			<a href="/customise" aria-current={$page.url.pathname === '/customise' ? 'page' : undefined}>Customise</a>
+		</div>
+
+		<div class="nav-actions">
+			<a
+				href="https://github.com/ZisisKostakakis"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="github-link"
+				aria-label="GitHub profile"
+			>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+					<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+				</svg>
+			</a>
+			<ThemeToggle />
+		</div>
+	</nav>
 </header>
 
 <style>
-  header {
-    display: flex;
-    justify-content: center;
-    padding: 1rem;
-    background: linear-gradient(135deg, rgba(255, 87, 51, 0.05) 0%, rgba(51, 181, 255, 0.05) 100%);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
+	header {
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		background-color: color-mix(in oklch, var(--color-bg), transparent 20%);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--color-border);
+	}
 
-  nav {
-    display: flex;
-    justify-content: center;
-    --background: rgba(255, 255, 255, 0.9);
-    width: 100%;
-    max-width: 1200px;
-  }
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		max-width: 64rem;
+		margin: 0 auto;
+		padding: var(--space-3) var(--space-4);
+		gap: var(--space-4);
+	}
 
-  ul {
-    position: relative;
-    padding: 0 1rem;
-    margin: 0;
-    height: 3em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style: none;
-    background: var(--background);
-    border-radius: 30px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+	.logo {
+		font-size: var(--text-lg);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		color: var(--color-text);
+		text-decoration: none;
+		white-space: nowrap;
+	}
 
-  li {
-    position: relative;
-    height: 100%;
-  }
+	.logo:hover {
+		color: var(--color-text);
+	}
 
-  li[aria-current="page"]::before {
-    --size: 6px;
-    content: "";
-    width: 0;
-    height: 0;
-    position: absolute;
-    top: 0;
-    left: calc(50% - var(--size));
-    border: var(--size) solid transparent;
-    border-top: var(--size) solid #ff5733;
-  }
+	.nav-links {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+	}
 
-  nav a {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    padding: 0 1.5rem;
-    color: #2c3e50;
-    font-weight: 500;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+	.nav-links a {
+		position: relative;
+		padding: var(--space-2) var(--space-3);
+		font-size: var(--text-sm);
+		font-weight: 500;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		border-radius: var(--radius-md);
+		transition: color var(--duration-fast) var(--ease-out),
+			background-color var(--duration-fast) var(--ease-out);
+	}
 
-  nav a:hover {
-    color: #ff5733;
-    transform: translateY(-1px);
-  }
+	.nav-links a:hover {
+		color: var(--color-text);
+		background-color: var(--color-bg-inset);
+	}
 
-  .github-link {
-    color: white;
-    background: linear-gradient(135deg, #ff5733 0%, #33b5ff 100%);
-    border-radius: 20px;
-    padding: 0.5rem 1.2rem;
-    margin: 0 0.5rem;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
+	.nav-links a[aria-current='page'] {
+		color: var(--accent);
+	}
 
-  .github-link:hover {
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(135deg, #33b5ff 0%, #ff5733 100%);
-  }
+	.nav-links a[aria-current='page']::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: var(--space-3);
+		right: var(--space-3);
+		height: 2px;
+		background-color: var(--accent);
+		border-radius: var(--radius-full);
+	}
 
-  @media (max-width: 768px) {
-    nav a {
-      padding: 0 1rem;
-      font-size: 0.8rem;
-    }
+	.nav-actions {
+		display: flex;
+		align-items: center;
+		gap: var(--space-1);
+	}
 
-    .github-link {
-      padding: 0.4rem 1rem;
-    }
+	.github-link {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: var(--radius-md);
+		color: var(--color-text-secondary);
+		transition: color var(--duration-fast) var(--ease-out),
+			background-color var(--duration-fast) var(--ease-out);
+	}
 
-    ul {
-      padding: 0 0.5rem;
-    }
-  }
+	.github-link:hover {
+		color: var(--color-text);
+		background-color: var(--color-bg-inset);
+	}
+
+	@media (max-width: 480px) {
+		nav {
+			padding: var(--space-2) var(--space-3);
+		}
+
+		.logo {
+			font-size: var(--text-base);
+		}
+
+		.nav-links a {
+			padding: var(--space-1) var(--space-2);
+			font-size: var(--text-xs);
+		}
+	}
 </style>
