@@ -35,16 +35,6 @@
     max-width: 1200px;
   }
 
-  svg {
-    width: 2em;
-    height: 3em;
-    display: block;
-  }
-
-  path {
-    fill: var(--background);
-  }
-
   ul {
     position: relative;
     padding: 0 1rem;
@@ -95,7 +85,7 @@
     transform: translateY(-1px);
   }
 
-  .cta-link {
+  .github-link {
     color: white;
     background: linear-gradient(135deg, #ff5733 0%, #33b5ff 100%);
     border-radius: 20px;
@@ -106,7 +96,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
-  .cta-link:hover {
+  .github-link:hover {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -119,7 +109,7 @@
       font-size: 0.8rem;
     }
 
-    .cta-link {
+    .github-link {
       padding: 0.4rem 1rem;
     }
 
