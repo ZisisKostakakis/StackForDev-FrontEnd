@@ -1,327 +1,227 @@
 <script lang="ts">
-  import stackForDev from "$lib/images/stack-for-dev.webp";
-  import stackForDevFallback from "$lib/images/stack-for-dev.png";
-  import stackForDevOnOff from "$lib/images/stack-for-dev-on-off.png";
-
-  let isZoomed = false;
-  let isZoomingOut = false;
-
-  const toggleZoom = () => {
-    if (isZoomed) {
-      isZoomingOut = true;
-      setTimeout(() => {
-        isZoomed = false;
-        isZoomingOut = false;
-      }, 300);
-    } else {
-      isZoomed = true;
-    }
-  };
+	import { reveal } from '$lib/actions/reveal';
 </script>
 
 <svelte:head>
-  <title>Home</title>
-  <meta name="description" content="StackForDev app" />
+	<title>StackForDev — Docker dev environments, simplified</title>
+	<meta name="description" content="Generate custom Docker development environments in seconds. Choose your language, pick your stack, get a Dockerfile." />
 </svelte:head>
 
-<section class="center">
-  <span class="welcome">
-    <picture>
-      <source srcset={stackForDev} type="image/webp" />
-      <img src={stackForDevFallback} alt="Welcome" />
-    </picture>
-  </span>
-  <div class="description">
-    <h2>Welcome to StackForDev</h2>
-    <p class="lead">
-      StackForDev is your go-to platform for easily customizing your local
-      development environment. With just Docker installed on a fresh laptop, you
-      can quickly set up isolated development environments by running different
-      containers.
-    </p>
-    <p>
-      This allows you to switch between projects effortlessly, ensuring that
-      each project has its own set of dependencies without conflicts. No more
-      time wasted fixing dependency issues.
-    </p>
-    <p class="highlight">
-      Select your preferred programming language and dependencies, and create
-      tailored Docker images to streamline your workflow. Start building your
-      ideal development setup today!
-    </p>
-    <div class="image-container">
-      <picture>
-        <source srcset={stackForDevOnOff} type="image/webp" />
-        <img
-          src={stackForDevOnOff}
-          alt="Docker Switch On/Off"
-          class="on-off-image {isZoomed ? 'zoomed' : ''} {isZoomingOut
-            ? 'zooming-out'
-            : ''}"
-          on:click={toggleZoom}
-          on:keydown={(e) => e.key === "Enter" && toggleZoom()}
-          role="button"
-          tabindex="0"
-        />
-      </picture>
-      <p class="zoom-hint">
-        <svg class="zoom-icon" viewBox="0 0 24 24" width="16" height="16">
-          <path
-            fill="currentColor"
-            d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-          />
-          <path fill="currentColor" d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z" />
-        </svg>
-        Click image to zoom
-      </p>
-      {#if isZoomed || isZoomingOut}
-        <div
-          class="overlay {isZoomingOut ? 'fading-out' : ''}"
-          on:click={toggleZoom}
-          on:keydown={(e) => e.key === "Escape" && toggleZoom()}
-        />
-      {/if}
-    </div>
-    <a href="/customise" class="cta-button">customise Your Environment</a>
-  </div>
+<section class="hero">
+	<h1>
+		Dev environments,<br />
+		<span class="accent">simplified.</span>
+	</h1>
+	<p class="subtitle">
+		Generate custom Docker development environments in seconds.
+		Choose your language, pick your stack, get a Dockerfile.
+	</p>
+	<div class="hero-actions">
+		<a href="/customise" class="btn-primary">Get started</a>
+		<a href="/about" class="btn-ghost">Learn more</a>
+	</div>
+</section>
+
+<section class="features">
+	<div class="feature-card" use:reveal>
+		<div class="feature-icon">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<polyline points="16 18 22 12 16 6" />
+				<polyline points="8 6 2 12 8 18" />
+			</svg>
+		</div>
+		<h3>Choose Language</h3>
+		<p>Python, JavaScript, Go, Rust, or Java — select your preferred language and version.</p>
+	</div>
+
+	<div class="feature-card" use:reveal={{ delay: 100 }}>
+		<div class="feature-icon">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<rect x="3" y="3" width="7" height="7" />
+				<rect x="14" y="3" width="7" height="7" />
+				<rect x="14" y="14" width="7" height="7" />
+				<rect x="3" y="14" width="7" height="7" />
+			</svg>
+		</div>
+		<h3>Pick Stack</h3>
+		<p>Curated dependency stacks for web, data science, ML, microservices, and more.</p>
+	</div>
+
+	<div class="feature-card" use:reveal={{ delay: 200 }}>
+		<div class="feature-icon">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+				<polyline points="14 2 14 8 20 8" />
+				<line x1="16" y1="13" x2="8" y2="13" />
+				<line x1="16" y1="17" x2="8" y2="17" />
+				<polyline points="10 9 9 9 8 9" />
+			</svg>
+		</div>
+		<h3>Get Dockerfile</h3>
+		<p>Receive a production-ready Dockerfile with build and run instructions instantly.</p>
+	</div>
 </section>
 
 <style>
-  section {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    flex: 1;
-    padding-top: 2rem;
-  }
+	/* ── Hero ── */
+	.hero {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		padding: var(--space-16) 0 var(--space-20);
+		gap: var(--space-6);
+	}
 
-  .welcome {
-    display: block;
-    position: relative;
-    width: 90%;
-    height: auto;
-    padding: 0;
-    text-align: center;
-  }
+	h1 {
+		font-size: var(--text-5xl);
+		font-weight: 700;
+		line-height: 1.1;
+		letter-spacing: -0.03em;
+		color: var(--color-text);
+	}
 
-  .welcome img {
-    width: 50%;
-    height: auto;
-    max-width: 100%;
-    border-radius: 45%;
-    padding: 10px;
-    background-color: white;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
-    display: block;
-  }
+	.accent {
+		color: var(--accent);
+	}
 
-  .description {
-    text-align: center;
-    margin-top: 1rem;
-    max-width: 600px;
-    padding: 0 1rem;
-  }
+	.subtitle {
+		font-size: var(--text-lg);
+		max-width: 32rem;
+		color: var(--color-text-secondary);
+		line-height: 1.6;
+	}
 
-  .description h2 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(90deg, #ff5733 0%, #33b5ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+	.hero-actions {
+		display: flex;
+		gap: var(--space-3);
+		margin-top: var(--space-2);
+	}
 
-  .description p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin: 1rem 0;
-    color: #2c3e50;
-  }
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		padding: var(--space-3) var(--space-6);
+		font-size: var(--text-base);
+		font-weight: 600;
+		color: white;
+		background-color: var(--accent);
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		transition: background-color var(--duration-fast) var(--ease-out),
+			transform var(--duration-fast) var(--ease-out),
+			box-shadow var(--duration-fast) var(--ease-out);
+		box-shadow: var(--shadow-sm);
+	}
 
-  .description .lead {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #1a202c;
-  }
+	.btn-primary:hover {
+		background-color: var(--accent-hover);
+		color: white;
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-md);
+	}
 
-  .description .highlight {
-    background: linear-gradient(
-      90deg,
-      rgba(51, 181, 255, 0.1) 0%,
-      rgba(255, 87, 51, 0.1) 100%
-    );
-    padding: 1rem;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-  }
+	.btn-primary:active {
+		transform: translateY(0);
+		box-shadow: var(--shadow-xs);
+	}
 
-  .image-container {
-    margin: 1rem 0;
-    position: relative;
-  }
+	.btn-ghost {
+		display: inline-flex;
+		align-items: center;
+		padding: var(--space-3) var(--space-6);
+		font-size: var(--text-base);
+		font-weight: 600;
+		color: var(--color-text-secondary);
+		background-color: transparent;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		transition: color var(--duration-fast) var(--ease-out),
+			border-color var(--duration-fast) var(--ease-out),
+			background-color var(--duration-fast) var(--ease-out);
+	}
 
-  .on-off-image {
-    width: 75%;
-    height: auto;
-    max-width: 100%;
-    display: block;
-    margin: 0 auto;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-origin: center center;
-    will-change: transform;
-  }
+	.btn-ghost:hover {
+		color: var(--color-text);
+		border-color: var(--color-text-tertiary);
+		background-color: var(--color-bg-inset);
+	}
 
-  .on-off-image:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  }
+	/* ── Features ── */
+	.features {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-6);
+		padding-bottom: var(--space-16);
+	}
 
-  .on-off-image.zoomed {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
-    width: 80%;
-    max-height: 85vh;
-    z-index: 1000;
-    object-fit: contain;
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    animation: zoomIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+	.feature-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		padding: var(--space-6);
+		background-color: var(--color-bg-raised);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		transition: border-color var(--duration-fast) var(--ease-out),
+			box-shadow var(--duration-fast) var(--ease-out),
+			transform var(--duration-fast) var(--ease-out);
+	}
 
-  .on-off-image.zooming-out {
-    animation: zoomOut 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+	.feature-card:hover {
+		border-color: var(--color-text-tertiary);
+		box-shadow: var(--shadow-md);
+		transform: translateY(-2px);
+	}
 
-  @keyframes zoomIn {
-    from {
-      transform: translate(-50%, -50%) scale(0.8);
-      opacity: 0;
-    }
-    to {
-      transform: translate(-50%, -50%) scale(0.8);
-      opacity: 1;
-    }
-  }
+	.feature-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: var(--radius-md);
+		background-color: var(--accent-subtle);
+		color: var(--accent);
+	}
 
-  @keyframes zoomOut {
-    from {
-      transform: translate(-50%, -50%) scale(0.8);
-      opacity: 1;
-    }
-    to {
-      transform: translate(-50%, -50%) scale(0.8);
-      opacity: 0;
-    }
-  }
+	.feature-card h3 {
+		font-size: var(--text-lg);
+		font-weight: 600;
+	}
 
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0);
-    z-index: 999;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    animation: fadeIn 0.3s ease forwards;
-  }
+	.feature-card p {
+		font-size: var(--text-sm);
+		line-height: 1.6;
+	}
 
-  .overlay.fading-out {
-    animation: fadeOut 0.3s ease forwards;
-  }
+	/* ── Container queries ── */
+	@container (max-width: 600px) {
+		.features {
+			grid-template-columns: 1fr;
+		}
+	}
 
-  @keyframes fadeIn {
-    from {
-      background: rgba(0, 0, 0, 0);
-    }
-    to {
-      background: rgba(0, 0, 0, 0.8);
-    }
-  }
+	@container (min-width: 601px) and (max-width: 800px) {
+		.features {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
 
-  @keyframes fadeOut {
-    from {
-      background: rgba(0, 0, 0, 0.8);
-    }
-    to {
-      background: rgba(0, 0, 0, 0);
-    }
-  }
+	@media (max-width: 480px) {
+		.hero {
+			padding: var(--space-10) 0 var(--space-12);
+		}
 
-  /* Add responsive adjustments */
-  @media (max-width: 768px) {
-    .on-off-image {
-      width: 85%;
-    }
+		.hero-actions {
+			flex-direction: column;
+			width: 100%;
+		}
 
-    .on-off-image.zoomed {
-      width: 90%;
-      padding: 10px;
-    }
-  }
-
-  .cta-button {
-    display: inline-block;
-    margin-top: 2rem;
-    padding: 0.8rem 1.6rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: white;
-    background: linear-gradient(135deg, #ff5733 0%, #33b5ff 100%);
-    border-radius: 30px;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-transform: capitalize;
-    border: none;
-    cursor: pointer;
-  }
-
-  .cta-button:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    background: linear-gradient(135deg, #33b5ff 0%, #ff5733 100%);
-  }
-
-  .cta-button:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  }
-
-  button {
-    font-size: 1rem;
-    padding: 0.6rem 1.2rem;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #ff5733 0%, #33b5ff 100%);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(135deg, #33b5ff 0%, #ff5733 100%);
-  }
-
-  button:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-  }
+		.btn-primary,
+		.btn-ghost {
+			justify-content: center;
+		}
+	}
 </style>
