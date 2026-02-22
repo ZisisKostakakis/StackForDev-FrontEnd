@@ -1,13 +1,23 @@
 <script lang="ts">
+	import { onNavigate } from '$app/navigation';
 	import Header from './Header.svelte';
 	import '../app.css';
 
 	let { children } = $props();
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 </script>
 
 <div class="app">
 	<Header />
-
 	<main>
 		{@render children()}
 	</main>
@@ -24,16 +34,16 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		padding: 1rem;
 		width: 100%;
 		max-width: 64rem;
 		margin: 0 auto;
-		box-sizing: border-box;
+		padding: var(--space-4) var(--space-4);
+		container-type: inline-size;
 	}
 
 	@media (min-width: 480px) {
 		main {
-			padding: 2rem;
+			padding: var(--space-8) var(--space-6);
 		}
 	}
 </style>
