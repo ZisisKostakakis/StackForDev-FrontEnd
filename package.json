@@ -10,8 +10,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@fontsource/fira-mono": "^5.2.7",
-		"@neoconfetti/svelte": "^2.2.2",
+		"@fontsource-variable/inter": "^5.2.8",
+		"@fontsource/jetbrains-mono": "^5.2.8",
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^2.53.0",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
@@ -19,9 +19,5 @@
 		"svelte-check": "^4.4.3",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1"
-	},
-	"dependencies": {
-		"carbon-components-svelte": "^0.101.1",
-		"carbon-icons-svelte": "^13.8.0"
 	}
 }
