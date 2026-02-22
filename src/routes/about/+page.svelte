@@ -1,148 +1,200 @@
 <script lang="ts">
-  // Optional: You can import additional components or styles here if needed.
+	import { reveal } from '$lib/actions/reveal';
 </script>
 
 <svelte:head>
-  <title>About StackForDev</title>
-  <meta
-    name="description"
-    content="Learn more about StackForDev, a customizable local development environment platform."
-  />
+	<title>About — StackForDev</title>
+	<meta name="description" content="Learn how StackForDev helps you generate custom Docker development environments." />
 </svelte:head>
 
 <section class="about">
-  <h1>About StackForDev</h1>
+	<div class="about-header">
+		<h1>About StackForDev</h1>
+		<p class="subtitle">
+			A platform for generating custom Docker development environments — so you can start coding, not configuring.
+		</p>
+	</div>
 
-  <div class="content">
-    <p class="lead">
-      StackForDev is an innovative platform designed to simplify and streamline
-      your local development environment. Whether you are a beginner or an
-      experienced developer, StackForDev empowers you to create customized Docker
-      images tailored to your specific programming language and project
-      requirements.
-    </p>
+	<div class="bento">
+		<div class="bento-card bento-wide" use:reveal>
+			<h2>What it does</h2>
+			<p>
+				StackForDev generates production-ready Dockerfiles tailored to your specific language and dependency stack.
+				Start with a fresh machine that has only Docker installed and jump straight into coding — no dependency
+				conflicts, no configuration headaches.
+			</p>
+		</div>
 
-    <p class="highlight">
-      Imagine starting with a fresh laptop that has only Docker installed; you can jump straight into coding without the hassle of configuring your machine for every project. Docker allows you to run your applications in isolated containers, making it easy to manage dependencies and ensuring a consistent development experience across different systems.
-    </p>
+		<div class="bento-card" use:reveal={{ delay: 100 }}>
+			<h2>How it works</h2>
+			<ol>
+				<li>Choose your programming language and version</li>
+				<li>Select a curated dependency stack</li>
+				<li>Optionally add custom dependencies</li>
+				<li>Generate your Dockerfile with one click</li>
+				<li>Build the image and start developing</li>
+			</ol>
+		</div>
 
-    <h2>How It Works</h2>
-    <p>
-      After selecting your preferred programming language and stack of
-      dependencies, StackForDev sends a request to an API. This API runs backend
-      code that utilizes your choices to craft a custom Dockerfile specifically
-      tailored to your development environment. Once the Dockerfile is created,
-      you will receive it for download, along with detailed instructions on how to
-      build the Docker image and run the container.
-    </p>
+		<div class="bento-card" use:reveal={{ delay: 200 }}>
+			<h2>Why Docker?</h2>
+			<p>
+				Docker containers isolate your development environments, ensuring each project has its own dependencies
+				without conflicts. Switch between projects effortlessly and keep your machine clean.
+			</p>
+		</div>
 
-    <h2>Getting Started</h2>
-    <p>
-      To start using StackForDev, simply use the button below to begin customizing your environment. You can select your desired programming language, choose a dependency stack, and generate your custom Docker image in just a few clicks.
-    </p>
-
-    <a href="/customise" class="cta-button">Customise Your Environment</a>
-  </div>
+		<div class="bento-card bento-wide" use:reveal={{ delay: 300 }}>
+			<div class="cta-content">
+				<div>
+					<h2>Ready to get started?</h2>
+					<p>Configure your environment in just a few clicks.</p>
+				</div>
+				<a href="/customise" class="btn-primary">Customise your environment</a>
+			</div>
+		</div>
+	</div>
 </section>
 
 <style>
-  .about {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-    max-width: 800px;
-    margin: 0 auto;
-  }
+	.about {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-10);
+		padding: var(--space-12) 0 var(--space-16);
+	}
 
-  .content {
-    width: 100%;
-  }
+	.about-header {
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
 
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    background: linear-gradient(90deg, #ff5733 0%, #33b5ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
-  }
+	h1 {
+		font-size: var(--text-4xl);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+	}
 
-  h2 {
-    font-size: 1.8rem;
-    color: #2c3e50;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-  }
+	.subtitle {
+		font-size: var(--text-lg);
+		max-width: 36rem;
+		margin: 0 auto;
+		color: var(--color-text-secondary);
+	}
 
-  p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin: 1rem 0;
-    color: #2c3e50;
-  }
+	/* ── Bento Grid ── */
+	.bento {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-4);
+	}
 
-  .lead {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #1a202c;
-  }
+	.bento-card {
+		background-color: var(--color-bg-raised);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
+		transition: border-color var(--duration-fast) var(--ease-out),
+			box-shadow var(--duration-fast) var(--ease-out);
+	}
 
-  .highlight {
-    background: linear-gradient(90deg, rgba(51, 181, 255, 0.1) 0%, rgba(255, 87, 51, 0.1) 100%);
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-  }
+	.bento-card:hover {
+		border-color: var(--color-text-tertiary);
+		box-shadow: var(--shadow-sm);
+	}
 
-  .cta-button {
-    display: inline-block;
-    margin-top: 2rem;
-    padding: 0.8rem 1.6rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: white;
-    background: linear-gradient(135deg, #ff5733 0%, #33b5ff 100%);
-    border-radius: 30px;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-transform: capitalize;
-  }
+	.bento-wide {
+		grid-column: 1 / -1;
+	}
 
-  .cta-button:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-    background: linear-gradient(135deg, #33b5ff 0%, #ff5733 100%);
-  }
+	h2 {
+		font-size: var(--text-xl);
+		font-weight: 600;
+	}
 
-  .cta-button:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  }
+	.bento-card p {
+		font-size: var(--text-base);
+		line-height: 1.7;
+	}
 
-  @media (max-width: 768px) {
-    .about {
-      padding: 1rem;
-    }
+	ol {
+		margin: 0;
+		padding-left: var(--space-5);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
 
-    h1 {
-      font-size: 2rem;
-    }
+	ol li {
+		font-size: var(--text-base);
+		color: var(--color-text-secondary);
+		line-height: 1.6;
+	}
 
-    h2 {
-      font-size: 1.5rem;
-    }
+	ol li::marker {
+		color: var(--accent);
+		font-weight: 600;
+	}
 
-    p {
-      font-size: 1rem;
-    }
+	/* ── CTA Card ── */
+	.cta-content {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-6);
+		flex-wrap: wrap;
+	}
 
-    .lead {
-      font-size: 1.1rem;
-    }
-  }
+	.cta-content > div {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		padding: var(--space-3) var(--space-6);
+		font-size: var(--text-base);
+		font-weight: 600;
+		color: white;
+		background-color: var(--accent);
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		white-space: nowrap;
+		transition: background-color var(--duration-fast) var(--ease-out),
+			transform var(--duration-fast) var(--ease-out),
+			box-shadow var(--duration-fast) var(--ease-out);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.btn-primary:hover {
+		background-color: var(--accent-hover);
+		color: white;
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-md);
+	}
+
+	/* ── Container queries ── */
+	@container (max-width: 550px) {
+		.bento {
+			grid-template-columns: 1fr;
+		}
+
+		.cta-content {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.about {
+			padding: var(--space-8) 0 var(--space-12);
+		}
+	}
 </style>
