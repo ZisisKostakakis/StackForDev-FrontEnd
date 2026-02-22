@@ -8,7 +8,7 @@
   let customDependencies: string[] = [];
   let selectedDependencyDescription = "";
   let selectedVersion = "";
-  let languages = ["Python", "JavaScript", "Go"];
+  let languages = ["Python", "JavaScript", "Go", "Rust", "Java"];
   let isLoading = false;
   let errorMessage = "";
   let generatedDockerfile = "";
@@ -18,6 +18,8 @@
     Python: ["3.12", "3.11", "3.10", "3.9"],
     JavaScript: ["22", "20", "18"],
     Go: ["1.23", "1.22", "1.21"],
+    Rust: ["1.82", "1.81", "1.80"],
+    Java: ["21", "17", "11"],
   };
 
   const dependencies = {
@@ -100,6 +102,40 @@
         name: "Data Processing Stack",
         description:
           "Includes Go, Ginkgo, Gomega, PostgreSQL, and Redis. Suitable for building data processing applications.",
+      },
+    ],
+    Rust: [
+      {
+        name: "Actix-Web Stack",
+        description:
+          "Includes Actix-web, Serde, and Tokio. A high-performance async web framework stack for building fast HTTP services.",
+      },
+      {
+        name: "CLI Tools Stack",
+        description:
+          "Includes Clap and Anyhow. A lightweight stack for building robust command-line applications in Rust.",
+      },
+      {
+        name: "WebAssembly Stack",
+        description:
+          "Includes wasm-bindgen-cli. A stack for compiling Rust to WebAssembly and interoperating with JavaScript.",
+      },
+    ],
+    Java: [
+      {
+        name: "Spring Boot Stack",
+        description:
+          "Spring Boot with embedded Tomcat, auto-configuration, and production-ready features. The standard stack for building Java microservices and REST APIs.",
+      },
+      {
+        name: "Maven Build Stack",
+        description:
+          "Maven wrapper with dependency management via pom.xml. Ideal for projects following the Maven build lifecycle.",
+      },
+      {
+        name: "Gradle Build Stack",
+        description:
+          "Gradle build tooling with Groovy/Kotlin DSL support. Great for flexible, high-performance Java builds.",
       },
     ],
   } as const;
