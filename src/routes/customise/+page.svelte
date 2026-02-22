@@ -4,18 +4,18 @@
 
   let { form }: { form: ActionData } = $props();
 
-  let selectedLanguage = "";
-  let selectedDependency = "";
-  let selectedDependencies: string[] = [];
-  let customExtras = "";
-  let customDependencies: string[] = [];
-  let selectedDependencyDescription = "";
-  let selectedVersion = "";
+  let selectedLanguage = $state("");
+  let selectedDependency = $state("");
+  let selectedDependencies: string[] = $state([]);
+  let customExtras = $state("");
+  let customDependencies: string[] = $state([]);
+  let selectedDependencyDescription = $state("");
+  let selectedVersion = $state("");
   let languages = ["Python", "JavaScript", "Go", "Rust", "Java"];
-  let isLoading = false;
-  let errorMessage = "";
-  let generatedDockerfile = "";
-  let copied = false;
+  let isLoading = $state(false);
+  let errorMessage = $state("");
+  let generatedDockerfile = $state("");
+  let copied = $state(false);
 
   const languageVersions: Record<string, string[]> = {
     Python: ["3.12", "3.11", "3.10", "3.9"],
@@ -143,17 +143,6 @@
     ],
   } as const;
 
-  function updateSelectedDependency(event: Event) {
-    const target = event.target as HTMLSelectElement;
-    const selectedValue = target.value;
-    selectedDependency = selectedValue;
-    selectedDependencyDescription =
-      dependencies[selectedLanguage as keyof typeof dependencies].find(
-        (dep) => dep.name === selectedValue
-      )?.description || "";
-    selectedDependencies = selectedValue ? [selectedValue] : [];
-  }
-
   function handleCustomInput(event: Event) {
     const target = event.target as HTMLTextAreaElement;
     customExtras = target.value;
@@ -163,6 +152,19 @@
       .map((dep) => dep.trim())
       .filter((dep) => dep.length > 0);
   }
+
+  $effect(() => {
+    if (selectedLanguage && selectedDependency) {
+      selectedDependencyDescription =
+        dependencies[selectedLanguage as keyof typeof dependencies].find(
+          (dep) => dep.name === selectedDependency
+        )?.description || "";
+      selectedDependencies = selectedDependency ? [selectedDependency] : [];
+    } else {
+      selectedDependencyDescription = "";
+      selectedDependencies = [];
+    }
+  });
 
   function generateDockerfile() {
     if (!selectedLanguage || !selectedDependency || !selectedVersion) {
@@ -212,7 +214,7 @@
       <h2>Select Language</h2>
       <select
         bind:value={selectedLanguage}
-        on:change={() => {
+        onchange={() => {
           selectedDependencies = [];
           selectedDependencyDescription = "";
           selectedDependency = "";
@@ -230,18 +232,19 @@
 
     <div class="card">
       <h2>Select Dependencies Stack</h2>
-      <select
-        bind:value={selectedDependency}
-        on:change={updateSelectedDependency}
-        disabled={!selectedLanguage}
-      >
-        <option value="" disabled>Select a dependency</option>
-        {#if selectedLanguage}
-          {#each dependencies[selectedLanguage as keyof typeof dependencies] as dep}
-            <option value={dep.name}>{dep.name}</option>
-          {/each}
-        {/if}
-      </select>
+      {#key selectedLanguage}
+        <select
+          bind:value={selectedDependency}
+          disabled={!selectedLanguage}
+        >
+          <option value="" disabled selected>Select a dependency</option>
+          {#if selectedLanguage}
+            {#each dependencies[selectedLanguage as keyof typeof dependencies] as dep}
+              <option value={dep.name}>{dep.name}</option>
+            {/each}
+          {/if}
+        </select>
+      {/key}
       {#if selectedDependencyDescription}
         <p class="description">{selectedDependencyDescription}</p>
       {/if}
@@ -249,14 +252,16 @@
 
     <div class="card">
       <h2>Select Version</h2>
-      <select bind:value={selectedVersion} disabled={!selectedLanguage}>
-        <option value="" disabled>Select a version</option>
-        {#if selectedLanguage}
-          {#each languageVersions[selectedLanguage] as version}
-            <option value={version}>{selectedLanguage} {version}</option>
-          {/each}
-        {/if}
-      </select>
+      {#key selectedLanguage}
+        <select bind:value={selectedVersion} disabled={!selectedLanguage}>
+          <option value="" disabled selected>Select a version</option>
+          {#if selectedLanguage}
+            {#each languageVersions[selectedLanguage] as version}
+              <option value={version}>{selectedLanguage} {version}</option>
+            {/each}
+          {/if}
+        </select>
+      {/key}
     </div>
 
     <div class="card">
@@ -264,9 +269,9 @@
       <p class="hint">Enter additional dependencies, separated by commas</p>
       <textarea
         bind:value={customExtras}
-        on:input={handleCustomInput}
+        oninput={handleCustomInput}
         placeholder="Example: numpy, pandas, requests, ..."
-      />
+      ></textarea>
       {#if customDependencies.length > 0}
         <div class="dependencies-list">
           {#each customDependencies as dependency}
@@ -279,7 +284,7 @@
     <div class="card highlight">
       <h2>Summary</h2>
       <p><strong>Language:</strong> {selectedLanguage || "None"} {selectedVersion ? `(${selectedVersion})` : ""}</p>
-      <p>
+      <div>
         <strong>Dependencies:</strong>
         {#if selectedDependencies.length > 0}
           <div class="dependencies-list">
@@ -290,8 +295,8 @@
         {:else}
           None
         {/if}
-      </p>
-      <p>
+      </div>
+      <div>
         <strong>Custom Extras:</strong>
         {#if customDependencies.length > 0}
           <div class="dependencies-list">
@@ -302,7 +307,7 @@
         {:else}
           None
         {/if}
-      </p>
+      </div>
     </div>
 
     <form
@@ -338,7 +343,7 @@
         <button
           type="button"
           class="secondary-button"
-          on:click={() => {
+          onclick={() => {
             selectedLanguage = "";
             selectedDependencies = [];
             customExtras = "";
@@ -365,7 +370,7 @@
       <div class="card result-card">
         <h2>Generated Dockerfile</h2>
         <div class="dockerfile-container">
-          <button class="copy-button" on:click={() => copyToClipboard(generatedDockerfile)}>
+          <button class="copy-button" onclick={() => copyToClipboard(generatedDockerfile)}>
             {copied ? "Copied!" : "Copy"}
           </button>
           <pre><code>{generatedDockerfile}</code></pre>
@@ -373,7 +378,7 @@
 
         <h3>Run your container</h3>
         <div class="dockerfile-container">
-          <button class="copy-button" on:click={() => copyToClipboard(getDockerRunCommand())}>
+          <button class="copy-button" onclick={() => copyToClipboard(getDockerRunCommand())}>
             Copy
           </button>
           <pre><code>{getDockerRunCommand()}</code></pre>
